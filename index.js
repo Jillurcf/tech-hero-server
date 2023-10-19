@@ -37,13 +37,18 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/addedproduct/:id', async(req, res) =>{
-      const id= req.params.id;
-      const query = {_id: new ObjectId(id) }
-      const result = await addedProductCollection.findOne(query)
-      res.send(result);
+   
+    app.get('/addedproduct/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const options ={
+        sort: {_id: 1},
+        limit: 4
+      }
+      const result = await addedProductCollection.find(query, options).toArray();
       console.log(result);
-    })
+      res.send(result)
+  })
 
     app.post('/addedproduct', async(req, res)=>{
       const addedProduct = req.body;
