@@ -39,16 +39,28 @@ async function run() {
     })
 
    
-    app.get('/addedproduct/:id', async(req, res)=>{
-      const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
-      const options ={
-        sort: {_id: 1},
-        limit: 4
-      }
-      const result = await addedProductCollection.find(query, options).toArray();
-      console.log(result);
-      res.send(result)
+  //   app.get('/addedproduct/:id', async(req, res)=>{
+  //     const id = req.params.id;
+  //     const query = {_id: new ObjectId(id)};
+  //     const options ={
+  //       sort: {_id: 1},
+  //       limit: 4
+  //     }
+  //     const result = await addedProductCollection.find(query, options).toArray();
+  //     console.log(result);
+  //     res.send(result)
+  // })
+
+  app.get('/addedproduct/:brandname', async(req, res)=>{
+    const brandname = req.params.brandname;
+    const query = {brandname: brandname}
+    // const options = {
+    //   sort: {brandname: 1},
+    //   limit: 4
+    // }
+    const result = await addedProductCollection.find(query).toArray()
+    console.log(result);
+    res.send(result)
   })
 
     app.post('/addedproduct', async(req, res)=>{
