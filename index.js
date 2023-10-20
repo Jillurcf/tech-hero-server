@@ -120,8 +120,6 @@ async function run() {
 
 
 
-// https://assignment10-server-dxd6jk8nm-jillurs-projects.vercel.app
-
     // user related API
     app.post("/user", async (req, res) => {
       const user = req.body;
@@ -130,7 +128,7 @@ async function run() {
       res.send(result);
     });
 
-    // Send a ping to confirm a successful connection
+   
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
