@@ -1,19 +1,15 @@
-const express = require('express');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const cors = require('cors');
-require('dotenv').config()
+const express = require("express");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const cors = require("cors");
+require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-
 // middleware
 app.use(cors());
-app.use(express.json())
-
-
+app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bkhpyyg.mongodb.net/?retryWrites=true&w=majority`;
-
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -21,7 +17,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -29,57 +25,63 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const addedProductCollection = client.db('addedprodDB').collection('addedproduct')
-    const userCollection = client.db('signupUserdDB').collection('signupUserdDB')
+    const addedProductCollection = client
+      .db("addedprodDB")
+      .collection("addedproduct");
+    const userCollection = client
+      .db("signupUserdDB")
+      .collection("signupUserdDB");
 
-    app.get('/addedproduct', async(req, res)=>{
-      const cursor = addedProductCollection.find()
-      const result =await cursor.toArray();
+    app.get("/addedproduct", async (req, res) => {
+      const cursor = addedProductCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
-    })
+    });
 
    
-  //   app.get('/addedproduct/:id', async(req, res)=>{
-  //     const id = req.params.id;
-  //     const query = {_id: new ObjectId(id)};
-  //     const options ={
-  //       sort: {_id: 1},
-  //       limit: 4
-  //     }
-  //     const result = await addedProductCollection.find(query, options).toArray();
-  //     console.log(result);
-  //     res.send(result)
-  // })
 
-  app.get('/addedproduct/:brandname', async(req, res)=>{
-    const brandname = req.params.brandname;
-    const query = {brandname: brandname}
-    // const options = {
-    //   sort: {brandname: 1},
-    //   limit: 4
-    // }
-    const result = await addedProductCollection.find(query).toArray()
-    console.log(result);
-    res.send(result)
-  })
 
-    app.post('/addedproduct', async(req, res)=>{
-      const addedProduct = req.body;
-      const result = await addedProductCollection.insertOne(addedProduct)
+    app.get("/addedproduct/:brandname", async (req, res) => {
+      const brandname = req.params.brandname;
+      const query = { brandname: brandname }
+      // const options = {
+      //   sort: {brandname: 1},
+      //   limit: 4
+      // }
+      const result = await addedProductCollection.find(query).toArray();
+      console.log(result);
       res.send(result);
-    })
+    });
 
-    // user related API
-    app.post('/user', async(req, res)=>{
-      const user = req.body;
-      console.log(user);
-      const result = await userCollection.insertOne(user)
+    app.get("/addedproduct/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = addedProductCollection.findOne(query)
+      console.log(result);
       res.send(result)
     })
-    
+
+    app.post("/addedproduct", async (req, res) => {
+      const addedProduct = req.body;
+      const result = await addedProductCollection.insertOne(addedProduct);
+      res.send(result);
+    });
+
+   
+
+    // user related API
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -87,13 +89,10 @@ async function run() {
 }
 run().catch(console.dir);
 
+app.get("/", (req, res) => {
+  res.send("Brand Shop is running");
+});
 
-
-app.get('/', (req, res)=>{
-    res.send('Brand Shop is running')
-
-})
-
-app.listen(port, ()=>{
-    console.log(`Brand Shop is running: ${port}`);
-})
+app.listen(port, () => {
+  console.log(`Brand Shop is running: ${port}`);
+});
