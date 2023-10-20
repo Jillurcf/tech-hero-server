@@ -29,15 +29,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const addedProductCollection = client
-      .db("addedprodDB")
-      .collection("addedproduct");
-    const userCollection = client
-      .db("signupUserdDB")
-      .collection("signupUserdDB");
-    const cartCollection = client
-      .db("addcartDB")
-      .collection("addcart");
+    const addedProductCollection = client.db("addedprodDB").collection("addedproduct");
+    const userCollection = client.db("signupUserdDB").collection("signupUserdDB");
+    const cartCollection = client.db("addcartDB").collection("addcart");
 
     app.get("/addedproduct", async (req, res) => {
       const cursor = addedProductCollection.find();
@@ -60,7 +54,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/addedproduct/:id', async(req, res) => {
+    app.get("/addedproduct/products/:id", async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await addedProductCollection.findOne(query)
@@ -68,20 +62,63 @@ async function run() {
       res.send(result)
     });
 
+    
+
     app.post("/addedproduct", async(req, res) => {
       const addedProduct = req.body;
       const result = await addedProductCollection.insertOne(addedProduct);
       res.send(result);
     });
 
+    app.put('/addedproduct/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true};
+      const updatedProduct = req.body;
+      const product = {
+          $set: {
+
+            image: updatedProduct.image,
+            name: updatedProduct.name, 
+            brandname: updatedProduct.brandname, 
+            type: updatedProduct.type, 
+            price: updatedProduct.price, 
+            shortdescription: updatedProduct.shortdescription, 
+            rating: updatedProduct.rating           
+          }
+      }
+      const result = await addedProductCollection.updateOne(filter, product, options )
+      res.send(result)
+      console.log(result);
+  })
+
   //  cart related api
+
+  app.get('/addcart', async(req, res) => {
+    const cursor = cartCollection.find();
+    const result = await cursor.toArray()
+    res.send(result)
+    console.log(result);
+  })
+
+  
+
+  app.delete('/addcart/delete/:id', async(req, res)=>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)}
+    const result = await cartCollection.deleteOne(query);
+    res.send(result)
+
+})
+
   app.post('/addcart', async(req, res)=>{
     const addCart = req.body;
     const result = await cartCollection.insertOne(addCart);
     console.log(result);
     res.send(result)
-
   })
+
+
 
 // https://assignment10-server-dxd6jk8nm-jillurs-projects.vercel.app
 
